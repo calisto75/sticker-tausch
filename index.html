@@ -95,12 +95,31 @@ function parseListe(text){
   return text.split(",").map(x => parseInt(x.trim())).filter(x => !isNaN(x));
 }
 
+// 🔥 NAME SPEICHERN
+function speichereName() {
+  const name = document.getElementById("name").value;
+  document.cookie = "username=" + name + "; path=/; max-age=31536000";
+}
+
+// 🔥 NAME LADEN
+function ladeName() {
+  const cookies = document.cookie.split("; ");
+  for (let c of cookies) {
+    if (c.startsWith("username=")) {
+      const name = c.split("=")[1];
+      document.getElementById("name").value = name;
+    }
+  }
+}
+
 window.speichern = function(){
   const name = document.getElementById("name").value.trim();
   const habe = parseListe(document.getElementById("habe").value);
   const suche = parseListe(document.getElementById("suche").value);
 
   if(!name) return alert("Name fehlt!");
+
+  speichereName(); // 👉 HIER NEU
 
   db.collection("users").doc(name).set({
     name: name,
@@ -160,6 +179,11 @@ window.matches = async function(){
 
   document.getElementById("output").innerHTML =
     html || "Keine Matches gefunden";
+};
+
+// 🔥 BEIM LADEN AUTOMATISCH NAME EINSETZEN
+window.onload = function() {
+  ladeName();
 };
 </script>
 
